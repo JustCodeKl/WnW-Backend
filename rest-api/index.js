@@ -14,7 +14,7 @@ const Booking = require('./models/Booking.js')
 require('dotenv').config();
 
 const bcryptSalt = bcrypt.genSaltSync(10);
-const jwtSecret = 'jscbshcshssdsuegfezefbekwr3zzz23'
+const jwtSecret = process.env.JWT_SECRET
 
 app.use(express.json());
 app.use(cookieParser());
