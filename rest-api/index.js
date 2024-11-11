@@ -88,7 +88,7 @@ app.get('/profile', (req, res) => {
 
 
 app.post('/logout', (req, res) => {
-    res.cookie('token', '').json('Logged out succesful')
+    res.cookie('token', '', {sameSite: 'none', secure: true}).json('Logged out succesful')
 })
 
 app.get('/users', async (req, res) => {
