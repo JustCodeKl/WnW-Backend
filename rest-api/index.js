@@ -53,8 +53,8 @@ app.post('/login', async (req, res) => {
     const {email, password} = req.body;
 
    const user = await User.findOne({email})
-
-   if(user && user !== null) {
+   try {
+    if(user && user !== null) {
         const passOK = bcrypt.compareSync(password, user.password);
         if(passOK) {
             // yarn add jsonwebtoken
@@ -69,6 +69,9 @@ app.post('/login', async (req, res) => {
         else res.json({responseStatus: 'Password not Ok'})
     }
    else res.json({responseStatus:'User not found'})
+   } catch (error) {
+        console.log(error);
+   }
 
 })
 
@@ -131,35 +134,43 @@ app.post('/places', async (req, res) => {
     const {title, address, addedPhotos, 
         extraInfo, description, perks, 
         checkin, checkout, guests, price} = req.body;
-    jwt.verify(token, jwtSecret, {}, async (err, result) => {
-        if(err) throw err; 
-        const placeDoc = await Place.create({
-            owner: result.id,
-            title,
-            address,
-            description,
-            extraInfo,
-            photos: addedPhotos,
-            checkIn: checkin,
-            checkOut: checkout,
-            perks,
-            maxGuests: guests,
-            price
+    try {
+        jwt.verify(token, jwtSecret, {}, async (err, result) => {
+            if(err) throw err; 
+            const placeDoc = await Place.create({
+                owner: result.id,
+                title,
+                address,
+                description,
+                extraInfo,
+                photos: addedPhotos,
+                checkIn: checkin,
+                checkOut: checkout,
+                perks,
+                maxGuests: guests,
+                price
+            });
+            res.json(placeDoc);
         });
-        res.json(placeDoc);
-    });
+    } catch (error) {
+        console.log(error);
+    }
 
 });
 
 
 app.get('/user-places', async(req, res) => {
     const {token} = req.cookies;
-    if(token){
-        jwt.verify(token, jwtSecret, {}, async (err, result) => {
-            if(err) throw err;
-            const {id} = result;
-            res.json( await Place.find({owner: id}));
-        });
+    try {
+        if(token){
+            jwt.verify(token, jwtSecret, {}, async (err, result) => {
+                if(err) throw err;
+                const {id} = result;
+                res.json( await Place.find({owner: id}));
+            });
+        }
+    } catch (error) {
+        console.log(error);
     }
 });
 
@@ -179,6 +190,7 @@ app.put('/places/', async(req, res) => {
     const {id, title, address, addedPhotos, 
         extraInfo, description, perks, 
         checkin, checkout, guests, price} = req.body;
+   try {
     jwt.verify(token, jwtSecret, {}, async (err, result) => {
         const placeDoc = await Place.findById(id);
         if(err) throw err;
@@ -199,6 +211,9 @@ app.put('/places/', async(req, res) => {
             res.json(placeDoc);
         }
     });
+   } catch (error) {
+        console.log(error);
+   }
 
 })
 
@@ -208,6 +223,7 @@ app.post('/bookings', async (req, res) => {
         place, numberOfGuests, checkIn, checkOut, name, phone, mail, price
     } = req.body;
 
+   try {
     jwt.verify(token, jwtSecret, {}, async (err, result) => {
         if(err) throw err; 
         const newBooking = await Booking.create({
@@ -219,6 +235,9 @@ app.post('/bookings', async (req, res) => {
         });
         res.json(newBooking);
     });
+   } catch (error) {
+    console.log(error);
+   }
 
 })
 
@@ -231,13 +250,17 @@ function compareByDate(a, b) {
 
 app.get('/user-bookings', async(req, res) => {
     const {token} = req.cookies;
-    jwt.verify(token, jwtSecret, {}, async (err, result) => {
-        if(err) throw err;
-        const {id} = result;
-        let bookingList = await Booking.find({userId: id}).populate('place')
-        bookingList.sort(compareByDate)
-        res.json(bookingList);
-    });
+    try {
+        jwt.verify(token, jwtSecret, {}, async (err, result) => {
+            if(err) throw err;
+            const {id} = result;
+            let bookingList = await Booking.find({userId: id}).populate('place')
+            bookingList.sort(compareByDate)
+            res.json(bookingList);
+        });
+    } catch (error) {
+        console.log(error);
+    }
 });
 // Port for listening on api request
 app.listen(4000)
