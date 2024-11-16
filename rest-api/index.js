@@ -63,7 +63,7 @@ app.post('/login', async (req, res) => {
                 id: user._id
             }, jwtSecret, {}, (err, token) => {
                 if(err) throw err;
-                res.cookie('token', token, {sameSite: 'none', secure: true}).json(user);
+                res.cookie('token', token, {sameSite: 'none', secure: true, httpOnly: true}).json(user);
             })
         }
         else res.json({responseStatus: 'Password not Ok'})
@@ -250,6 +250,7 @@ function compareByDate(a, b) {
 
 app.get('/user-bookings', async(req, res) => {
     const {token} = req.cookies;
+    console.log(token);
     try {
         jwt.verify(token, jwtSecret, {}, async (err, result) => {
             if(err) throw err;
