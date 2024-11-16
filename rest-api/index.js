@@ -64,6 +64,7 @@ app.post('/login', async (req, res) => {
             }, jwtSecret, {}, (err, token) => {
                 if(err) throw err;
                 res.cookie('token', token, {sameSite: 'none', secure: true, httpOnly: true}).json(user);
+                console.log(res.cookies)
             })
         }
         else res.json({responseStatus: 'Password not Ok'})
