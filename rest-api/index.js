@@ -64,7 +64,7 @@ app.post('/login', async (req, res) => {
                 id: user._id
             }, jwtSecret, {}, (err, token) => {
                 if(err) throw err;
-                res.cookie('token', token, {sameSite: 'none', secure: true, httpOnly: true}).json(user);
+                res.cookie('token', token, {sameSite: 'None', secure: true, httpOnly: true, maxAge: 30*60*1000}).json(user);
             })
             console.log(res.headers)
         }
