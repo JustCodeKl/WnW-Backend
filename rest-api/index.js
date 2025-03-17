@@ -1,23 +1,33 @@
+// Purpose: Backend for the WNW app.
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const User = require('./models/User');
-const app = express();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const download = require('image-downloader');
 const multer = require('multer');
 const fs = require('fs');
+
+
+// Express app
+const app = express();
+
+// Models for the database
+const User = require('./models/User');
 const Place = require('./models/Place.js')
 const Booking = require('./models/Booking.js')
+
+// Load environment variables
 require('dotenv').config();
 
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = 'jscbshcshssdsuegfezefbekwr3zzz23'
 
+// Middleware for parsing json and cookies
 app.use(express.json());
 app.use(cookieParser());
+
 // Allow all uploads to be displayed in the frontend side
 app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use(cors({
@@ -26,10 +36,11 @@ app.use(cors({
     allowOrigin: true,
 }));
 
-
+// Connect to the database
 mongoose.connect(process.env.MONGO_URL);
 
 
+// Register endpoint
 app.post('/register', async (req, res) => {
 
     const {name, email, password} = req.body;
@@ -49,6 +60,7 @@ app.post('/register', async (req, res) => {
 });
 
 
+// Login endpoint
 app.post('/login', async (req, res) => {
     const {email, password} = req.body;
 
@@ -78,6 +90,7 @@ app.post('/login', async (req, res) => {
 })
 
 
+// Profile endpoint
 app.get('/profile', (req, res) => {
 
     // yarn add cookie-parser
@@ -92,15 +105,19 @@ app.get('/profile', (req, res) => {
 })
 
 
+// Logout endpoint
 app.post('/logout', (req, res) => {
     res.cookie('token', '', {sameSite: 'none', secure: true}).json('Logged out succesful')
 })
 
+
+// Users endpoint
 app.get('/users', async (req, res) => {
     res.json(await User.find());
 })
 
 
+// Upload-by-a-link endpoint
 app.post('/upload-by-link', async (req, res) => {
     // yarn add image-downloader
     const {link} = req.body;
@@ -112,8 +129,11 @@ app.post('/upload-by-link', async (req, res) => {
     res.json({newName});
 })
 
+// Multer middleware for uploading photos
 const photosMiddleware = multer({dest: 'uploads'});
 
+
+// Upload endpoint
 app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
     const uploadedPhotos = []
     for (let i = 0; i < req.files.length; i++) {
@@ -131,6 +151,7 @@ app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
 });
 
 
+// Places endpoint
 app.post('/places', async (req, res) => {
     const {token} = req.cookies;
     const {title, address, addedPhotos, 
@@ -161,6 +182,7 @@ app.post('/places', async (req, res) => {
 });
 
 
+// User places endpoint
 app.get('/user-places', async(req, res) => {
     const {token} = req.cookies;
     try {
@@ -176,17 +198,21 @@ app.get('/user-places', async(req, res) => {
     }
 });
 
+
+// Places endpoint
 app.get('/places', async(req, res) => {
     res.json( await Place.find());
 })
 
 
+// Place by id endpoint
 app.get('/places/:id', async(req, res) => {
     const {id} = req.params;
     res.json( await Place.findById(id));
 })
 
 
+// Delete place by id endpoint
 app.put('/places/', async(req, res) => {
     const {token} = req.cookies;
     const {id, title, address, addedPhotos, 
@@ -219,6 +245,8 @@ app.put('/places/', async(req, res) => {
 
 })
 
+
+// Booked plaxes endpoint
 app.post('/bookings', async (req, res) => {
     const {token} = req.cookies;
     const {
@@ -243,6 +271,7 @@ app.post('/bookings', async (req, res) => {
 
 })
 
+// Compare by date function
 function compareByDate(a, b) {
     const dateA = Date.parse(a.checkOut);
     const dateB = Date.parse(b.checkOut)
@@ -250,6 +279,7 @@ function compareByDate(a, b) {
   }
 
 
+// User bookings endpoint
 app.get('/user-bookings', async(req, res) => {
     const {token} = req.cookies;
     console.log(token);
@@ -265,5 +295,6 @@ app.get('/user-bookings', async(req, res) => {
         console.log(error);
     }
 });
+
 // Port for listening on api request
 app.listen(4000)
