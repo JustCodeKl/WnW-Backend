@@ -83,6 +83,7 @@ app.post('/login', async (req, res) => {
             // yarn add jsonwebtoken
             jwt.sign({
                 email: user.email,
+                id: user._id
             }, jwtSecret, {}, (err, token) => {
                 if(err) throw err;
                 res.cookie('token', token, {sameSite: 'None', secure: true, httpOnly: true, maxAge: 30*60*1000}).json(user);
