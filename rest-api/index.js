@@ -83,12 +83,11 @@ app.post('/login', async (req, res) => {
             // yarn add jsonwebtoken
             jwt.sign({
                 email: user.email,
-                id: user._id
             }, jwtSecret, {}, (err, token) => {
                 if(err) throw err;
                 res.cookie('token', token, {sameSite: 'None', secure: true, httpOnly: true, maxAge: 30*60*1000}).json(user);
             })
-            console.log('Header: ' + res.headers)
+            console.log('Header: ' + req.headers)
         }
         else res.json({responseStatus: 'Password not Ok'})
     }
@@ -108,7 +107,7 @@ app.get('/profile', (req, res) => {
     if(token){
         jwt.verify(token, jwtSecret, {}, async (err, result) => {
             if(err) throw err;
-            const {name,email,_id} = await User.findOne(result._id)
+            const {name,email,_id} = await User.findOne(result.email)
             console.log('User-details: ' + name,email,_id);
             res.json({name,email,_id});
         });
