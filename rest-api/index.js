@@ -9,15 +9,6 @@ const download = require('image-downloader');
 const multer = require('multer');
 const fs = require('fs');
 
-/*function createRandomString(length) {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-}*/
-
 
 // Express app
 const app = express();
@@ -31,8 +22,7 @@ const Booking = require('./models/Booking.js')
 require('dotenv').config();
 
 const bcryptSalt = bcrypt.genSaltSync(10);
-const jwtSecret = '07IfJTizHcl0nW8UXJ2uiYwNpg4vct3a';
-console.log('jwtSecret: '+ jwtSecret);
+const jwtSecret = 'jscbshcshssdsuegfezefbekwr3zzz23'
 
 // Middleware for parsing json and cookies
 app.use(express.json());
@@ -75,7 +65,7 @@ app.post('/login', async (req, res) => {
     const {email, password} = req.body;
 
    const user = await User.findOne({email})
-   console.log('User: '+ user)
+   console.log(user)
    try {
     if(user && user !== null) {
         const passOK = bcrypt.compareSync(password, user.password);
@@ -83,12 +73,12 @@ app.post('/login', async (req, res) => {
             // yarn add jsonwebtoken
             jwt.sign({
                 email: user.email,
-                id: user._id,
+                id: user._id
             }, jwtSecret, {}, (err, token) => {
                 if(err) throw err;
                 res.cookie('token', token, {sameSite: 'None', secure: true, httpOnly: true, maxAge: 30*60*1000}).json(user);
             })
-            console.log('Header: ' + req.headers)
+            console.log(res.headers)
         }
         else res.json({responseStatus: 'Password not Ok'})
     }
@@ -117,7 +107,7 @@ app.get('/profile', (req, res) => {
 
 // Logout endpoint
 app.post('/logout', (req, res) => {
-    res.clearCookie('token').json('Logged out succesful')
+    res.cookie('token', '', {sameSite: 'none', secure: true}).json('Logged out succesful')
 })
 
 
