@@ -99,6 +99,7 @@ app.get('/profile', (req, res) => {
         jwt.verify(token, jwtSecret, {}, async (err, result) => {
             if(err) throw err;
             const {name,email,_id} = await User.findOne(result._id)
+            console.log(name,email,_id);
             res.json({name,email,_id});
         });
     } else    res.json(null);
