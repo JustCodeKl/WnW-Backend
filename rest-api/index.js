@@ -117,7 +117,7 @@ app.get('/profile', (req, res) => {
 
 // Logout endpoint
 app.post('/logout', (req, res) => {
-    res.cookie('token', '', {sameSite: 'none', secure: true}).json('Logged out succesful')
+    res.clearCookie('token').json('Logged out succesful')
 })
 
 
