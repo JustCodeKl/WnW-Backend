@@ -9,6 +9,15 @@ const download = require('image-downloader');
 const multer = require('multer');
 const fs = require('fs');
 
+function createRandomString(length) {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
 
 // Express app
 const app = express();
@@ -22,7 +31,7 @@ const Booking = require('./models/Booking.js')
 require('dotenv').config();
 
 const bcryptSalt = bcrypt.genSaltSync(10);
-const jwtSecret = 'jscbshcshssdsuegfezefbekwr3zzz23'
+const jwtSecret = createRandomString(32);
 
 // Middleware for parsing json and cookies
 app.use(express.json());
