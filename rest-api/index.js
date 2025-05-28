@@ -32,6 +32,7 @@ require('dotenv').config();
 
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = createRandomString(32);
+console.log('jwtSecret: '+ jwtSecret);
 
 // Middleware for parsing json and cookies
 app.use(express.json());
@@ -74,7 +75,7 @@ app.post('/login', async (req, res) => {
     const {email, password} = req.body;
 
    const user = await User.findOne({email})
-   console.log(user)
+   console.log('User: '+ user)
    try {
     if(user && user !== null) {
         const passOK = bcrypt.compareSync(password, user.password);
@@ -87,7 +88,7 @@ app.post('/login', async (req, res) => {
                 if(err) throw err;
                 res.cookie('token', token, {sameSite: 'None', secure: true, httpOnly: true, maxAge: 30*60*1000}).json(user);
             })
-            console.log(res.headers)
+            console.log('Header: ' + res.headers)
         }
         else res.json({responseStatus: 'Password not Ok'})
     }
@@ -108,7 +109,7 @@ app.get('/profile', (req, res) => {
         jwt.verify(token, jwtSecret, {}, async (err, result) => {
             if(err) throw err;
             const {name,email,_id} = await User.findOne(result._id)
-            console.log(name,email,_id);
+            console.log('User-details: ' + name,email,_id);
             res.json({name,email,_id});
         });
     } else    res.json(null);
