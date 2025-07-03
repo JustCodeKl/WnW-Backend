@@ -99,16 +99,28 @@ app.post('/login', async (req, res) => {
 
 // Profile endpoint
 app.get('/profile', (req, res) => {
-
-    // yarn add cookie-parser
-    const {token} = req.cookies;
-    if(token){
-        jwt.verify(token, jwtSecret, {}, async (err, result) => {
-            if(err) throw err;
-            const {name,email,_id} = await User.findOne(result._id)
-            res.json({name,email,_id});
-        });
-    } else    res.json(null);
+    const token = req.cookies.token; 
+  console.log("Token from cookies:", token);
+  if (!token) {
+    return res
+      .status(401)
+      .json({ error: "Unauthorized access"});
+  }
+  try {
+    const decoded = jwt.verify(token, jwtSecret);
+    console.log("Decoded JWT:", decoded);
+    req.user = {
+        id: decoded.id,
+        role: decoded.role,
+        email: decoded.email,
+        username: decoded.username
+        // You can add more user info if needed
+    }; // Attach user info to request object
+      
+            res.json(req.user);
+  } catch (error) {
+    return res.status(401).json({ error: "Invalid token", success: false });
+  }
 })
 
 
