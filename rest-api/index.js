@@ -63,37 +63,26 @@ app.post('/register', async (req, res) => {
 // Login endpoint
 app.post('/login', async (req, res) => {
     const {email, password} = req.body;
-
    const user = await User.findOne({email})
-   console.log(user)
    try {
-    if(user && user !== null) {
+    if(user) {
         const passOK = bcrypt.compareSync(password, user.password);
         if(passOK) {
-            // yarn add jsonwebtoken
-            const token = jwt.sign({
-                email: user.email,
-                id: user._id,
-                name: user.name,
-            }, jwtSecret, {expiresIn: "1h"})
-            console.log(token);
-        res.cookie("token", token, {
-        httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
-        sameSite: "Strict", // Helps prevent CSRF attacks
-      })
-      .json({
-        message: "User logged in successfully",
-        token,
-        user
+            const passOk = bcrypt.compareSync(password, userDoc.password);
+    if (passOk) {
+      jwt.sign({
+        email:userDoc.email,
+        id:userDoc._id
+      }, jwtSecret, {}, (err,token) => {
+        if (err) throw err;
+        res.cookie('token', token).json(userDoc);
       });
-        }
-        else return res.json({responseStatus: 'Password not Ok'})
+    } else {
+      res.status(422).json('pass not ok');
     }
-   else res.json({responseStatus:'User not found'})
-   } catch (error) {
-        console.log(error);
-   }
-
+  } else {
+    res.json('not found');
+  }
 })
 
 
@@ -101,19 +90,14 @@ app.post('/login', async (req, res) => {
 app.get('/profile', (req, res) => {
     const {token} = req.cookies; 
   console.log("Token from cookies:", token);
-  if (!token) {
-    return res
-      .status(401)
-      .json({ error: "Unauthorized access"});
-  }
-  try {
-    const decoded = jwt.verify(token, jwtSecret);
-    console.log("Decoded JWT:", decoded);
-    res.json({ email: decoded?.email,
-                id: decoded?._id,
-                name: decoded?.name,});
-  } catch (error) {
-    return res.status(401).json({ error: "Invalid token", success: false });
+    if (token) {
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+      if (err) throw err;
+      const {name,email,_id} = await User.findById(userData.id);
+      res.json({name,email,_id});
+    });
+  } else {
+    res.json(null);
   }
 })
 
