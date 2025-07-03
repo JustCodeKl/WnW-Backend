@@ -75,7 +75,7 @@ app.post('/login', async (req, res) => {
                 email: user.email,
                 id: user._id,
                 username: user.username,
-            }, jwtSecret, {expiresIn: 1h})
+            }, jwtSecret, {expiresIn: "1h"})
             return res
       .cookie("token", token, {
         httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
