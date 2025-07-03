@@ -84,6 +84,8 @@ app.post('/login', async (req, res) => {
     res.json('not found');
   }
 })
+   }
+}
 
 
 // Profile endpoint
