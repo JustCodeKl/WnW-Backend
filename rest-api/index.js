@@ -99,7 +99,7 @@ app.post('/login', async (req, res) => {
 
 // Profile endpoint
 app.get('/profile', (req, res) => {
-    const token = req.cookies.token; 
+    const {token} = req.cookies; 
   console.log("Token from cookies:", token);
   if (!token) {
     return res
