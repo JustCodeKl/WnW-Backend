@@ -67,24 +67,20 @@ app.post('/login', async (req, res) => {
    try {
     if(user) {
         const passOK = bcrypt.compareSync(password, user.password);
-        if(passOK) {
-            const passOk = bcrypt.compareSync(password, userDoc.password);
     if (passOk) {
       jwt.sign({
-        email:userDoc.email,
-        id:userDoc._id
+        email:user.email,
+        id:user._id
       }, jwtSecret, {}, (err,token) => {
         if (err) throw err;
-        res.cookie('token', token).json(userDoc);
+        res.cookie('token', token).json(user);
       });
     } else {
       res.status(422).json('pass not ok');
     }
-  } else {
-    res.json('not found');
-  }
+  } 
 }
-   } catch(error){
+ catch(error){
        res.json("Login failed")
    }
 })
