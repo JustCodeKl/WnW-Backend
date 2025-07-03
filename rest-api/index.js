@@ -87,7 +87,7 @@ app.post('/login', async (req, res) => {
    } catch(error){
        res.json("Login failed")
    }
-}
+})
 
 
 // Profile endpoint
