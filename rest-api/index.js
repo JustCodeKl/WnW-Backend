@@ -83,7 +83,7 @@ app.post('/login', async (req, res) => {
   } else {
     res.json('not found');
   }
-})
+}
    }
 }
 
