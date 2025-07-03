@@ -74,7 +74,7 @@ app.post('/login', async (req, res) => {
             const token = jwt.sign({
                 email: user.email,
                 id: user._id,
-                username: user.username,
+                name: user.name,
             }, jwtSecret, {expiresIn: "1h"})
             return res
       .cookie("token", token, {
@@ -109,15 +109,9 @@ app.get('/profile', (req, res) => {
   try {
     const decoded = jwt.verify(token, jwtSecret);
     console.log("Decoded JWT:", decoded);
-    req.user = {
-        id: decoded.id,
-        role: decoded.role,
-        email: decoded.email,
-        username: decoded.username
-        // You can add more user info if needed
-    }; // Attach user info to request object
-      
-            res.json(req.user);
+    res.json({ email: decoded?.email,
+                id: decoded?._id,
+                name: decoded?.name,});
   } catch (error) {
     return res.status(401).json({ error: "Invalid token", success: false });
   }
