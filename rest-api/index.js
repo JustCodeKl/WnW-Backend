@@ -71,16 +71,23 @@ app.post('/login', async (req, res) => {
         const passOK = bcrypt.compareSync(password, user.password);
         if(passOK) {
             // yarn add jsonwebtoken
-            jwt.sign({
+            const token = jwt.sign({
                 email: user.email,
-                id: user._id
-            }, jwtSecret, {}, (err, token) => {
-                if(err) throw err;
-                res.cookie('token', token, {sameSite: 'None', secure: true, httpOnly: true, maxAge: 30*60*1000}).json(user);
-            })
-            console.log(res.headers)
+                id: user._id,
+                username: user.username,
+            }, jwtSecret, {expiresIn: 1h})
+            return res
+      .cookie("token", token, {
+        httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
+        sameSite: "Strict", // Helps prevent CSRF attacks
+      })
+      .json({
+        message: "User logged in successfully",
+        token,
+        user
+      });
         }
-        else res.json({responseStatus: 'Password not Ok'})
+        else return res.json({responseStatus: 'Password not Ok'})
     }
    else res.json({responseStatus:'User not found'})
    } catch (error) {
