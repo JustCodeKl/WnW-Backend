@@ -69,10 +69,12 @@ app.post('/login', async (req, res) => {
         const passOK = bcrypt.compareSync(password, user.password);
     if (passOk) {
       jwt.sign({
-        email:user.email,
-        id:user._id
+        email: user.email,
+        id: user._id,
+        name: user.name
       }, jwtSecret, {}, (err,token) => {
         if (err) throw err;
+        console.log("Token: " + token);
         res.cookie('token', token).json(user);
       });
     } else {
