@@ -64,9 +64,11 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
     const {email, password} = req.body;
    const user = await User.findOne({email})
+    console.log("User: " + user);
    try {
     if(user) {
         const passOK = bcrypt.compareSync(password, user.password);
+        console.log("Pass ok: " + passOK);
     if (passOk) {
       jwt.sign({
         email: user.email,
