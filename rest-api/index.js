@@ -72,10 +72,15 @@ app.post('/login', async (req, res) => {
         email: user.email,
         id: user._id,
         name: user.name
-      }, jwtSecret, {}, (err,token) => {
+      }, jwtSecret, 
+          { expiresIn: "1h" }, (err,token) => {
         if (err) throw err;
         console.log("Token: " + token);
-        res.cookie('token', token).json(user);
+        res.cookie('token', token, {
+                httpOnly: true,
+                sameSite: "Lax",         // Lax works better for dev
+                secure: false,           // Set to true in production (HTTPS)
+              }).json(user);
       });
     } else {
       res.status(422).json('pass not ok');
