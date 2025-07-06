@@ -80,8 +80,8 @@ app.post('/login', async (req, res) => {
         console.log("Token: " + token);
         res.cookie('token', token, {
                 httpOnly: true,
-                sameSite: "Lax",         // Lax works better for dev
-                secure: false,           // Set to true in production (HTTPS)
+                sameSite: "Strict",        
+                secure: true,          
               }).json(user);
       });
     } else {
