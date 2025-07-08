@@ -45,7 +45,7 @@ mongoose.connect(process.env.MONGO_URL);
 app.use('/api/auth', authRoutes);
 
 // Register endpoint
-app.post('/register', async (req, res) => {
+/* app.post('/register', async (req, res) => {
 
     const {name, email, password} = req.body;
 
@@ -61,7 +61,7 @@ app.post('/register', async (req, res) => {
     } catch (error) {
         console.log(error);
     }
-});
+}); */
 
 
 // Login endpoint

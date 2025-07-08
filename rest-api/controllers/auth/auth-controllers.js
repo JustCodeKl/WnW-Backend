@@ -4,6 +4,36 @@ const User = require("../../models/User");
 
 require("dotenv").config();
 
+const register = async (req, res) => {
+  const { username, email, password } = req.body;
+  try {
+    // Check if user already exists
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    if (existingUser) {
+      return res.json({
+        success: false,
+        error: "Email or Username already exists.",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = {
+      username,
+      email,
+      password: hashedPassword,
+    };
+    const savedUser = await User.create(newUser);
+    return res.json({
+      message: "User registered successfully",
+      user: savedUser,
+      success: true,
+    });
+  } catch (error) {
+    // Handle other errors
+    throw error;
+  }
+};
+
 const login = async (req, res) => {
   const { email, password } = req.body;
   console.log(email, password);
@@ -56,6 +86,23 @@ const login = async (req, res) => {
   }
 };
 
+const logout = async (req, res) => {
+  try {
+    // Clear the token cookie
+    res
+      .clearCookie("token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "none",
+      })
+      .json({ message: "User logged out successfully", success: true });
+  } catch (error) {
+    res.json({ error: "Logout failed", success: false });
+  }
+};
+
 module.exports = {
   login,
+  register,
+  logout
 };
