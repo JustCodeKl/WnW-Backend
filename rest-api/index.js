@@ -42,7 +42,7 @@ app.use(cors({
 mongoose.connect(process.env.MONGO_URL);
 
 
-app.use('auth/login', authRoutes);
+app.use('/auth/', authRoutes);
 
 // Register endpoint
 app.post('/register', async (req, res) => {
