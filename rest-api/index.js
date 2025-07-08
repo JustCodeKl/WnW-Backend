@@ -67,10 +67,9 @@ app.post('/register', async (req, res) => {
 // Login endpoint
 app.post('/login', async (req, res) => {
     const {email, password} = req.body;
-
    const user = await User.findOne({email})
    try {
-    if(user && user !== null) {
+    if(user) {
         const passOK = bcrypt.compareSync(password, user.password);
         if(passOK) {
             // yarn add jsonwebtoken
@@ -88,22 +87,22 @@ app.post('/login', async (req, res) => {
    } catch (error) {
         console.log(error);
    }
-
 })
 
 
 // Profile endpoint
 app.get('/profile', (req, res) => {
-
-    // yarn add cookie-parser
-    const {token} = req.cookies;
-    if(token){
-        jwt.verify(token, jwtSecret, {}, async (err, result) => {
-            if(err) throw err;
-            const {name,email,_id} = await User.findOne(result._id)
-            res.json({name,email,_id});
-        });
-    } else    res.json(null);
+    const {token} = req.cookies; 
+  console.log("Token from cookies:", token);
+    if (token) {
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+      if (err) throw err;
+      const {name,email,_id} = await User.findById(userData.id);
+      res.json({name,email,_id});
+    });
+  } else {
+    res.json(null);
+  }
 })
 
 
