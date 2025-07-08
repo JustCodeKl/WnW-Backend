@@ -5,10 +5,12 @@ const User = require("../../models/User");
 require("dotenv").config();
 
 const register = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { name, email, password } = req.body;
   try {
     // Check if user already exists
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    const existingUser = await User.findOne({ $or: [{ email }, { name }] });
+    console.log(existingUser);
+    
     if (existingUser) {
       return res.json({
         success: false,
