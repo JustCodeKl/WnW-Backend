@@ -104,8 +104,31 @@ const logout = async (req, res) => {
   }
 };
 
+//auth middleware
+const authMiddleware = async (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res
+      .status(401)
+      .json({ error: "Unauthorized access", success: false });
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = {
+      id: decoded.id,
+      email: decoded.email,
+      name: decoded.name,
+      // You can add more user info if needed
+    }; // Attach user info to request object
+    next(); // Proceed to the next middleware or route handler
+  } catch (error) {
+    return res.status(401).json({ error: "Invalid token", success: false });
+  }
+};
+
 module.exports = {
+  authMiddleware,
   login,
-  register,
-  logout
+  logout,
+  register
 };

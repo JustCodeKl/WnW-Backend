@@ -9,7 +9,8 @@ const download = require('image-downloader');
 const multer = require('multer');
 const fs = require('fs');
 
-const authRoutes = require("./routes/auth/auth-routes")
+const authRoutes = require("./routes/auth/auth-routes");
+const usersRoute = require("./routes/users/users-route")
 
 
 // Express app
@@ -43,55 +44,10 @@ mongoose.connect(process.env.MONGO_URL);
 
 
 app.use('/api/auth', authRoutes);
-
-// Register endpoint
-/* app.post('/register', async (req, res) => {
-
-    const {name, email, password} = req.body;
-
-    try {
-        const user = await User.create({
-            name,
-            email,
-            // yarn add bcryptjs
-            password: bcrypt.hashSync(password, bcryptSalt),
-        });
-        res.json(user);
-        
-    } catch (error) {
-        console.log(error);
-    }
-}); */
-
-
-// Login endpoint
-/* app.post('/login', async (req, res) => {
-    const {email, password} = req.body;
-   const user = await User.findOne({email})
-   try {
-    if(user) {
-        const passOK = bcrypt.compareSync(password, user.password);
-        if(passOK) {
-            // yarn add jsonwebtoken
-            jwt.sign({
-                email: user.email,
-                id: user._id
-            }, jwtSecret, {}, (err, token) => {
-                if(err) throw err;
-                res.cookie('token', token, {sameSite: 'None', secure: true, httpOnly: true, maxAge: 30*60*1000}).json(user);
-            })
-        }
-        else res.json({responseStatus: 'Password not Ok'})
-    }
-   else res.json({responseStatus:'User not found'})
-   } catch (error) {
-        console.log(error);
-   }
-}) */
-
+app.use('/api/users', usersRoute);
 
 // Profile endpoint
-app.get('/profile', (req, res) => {
+/* app.get('/profile', (req, res) => {
     const {token} = req.cookies; 
   console.log("Token from cookies:", token);
     if (token) {
@@ -103,19 +59,19 @@ app.get('/profile', (req, res) => {
   } else {
     res.json(null);
   }
-})
+}) */
 
 
 // Logout endpoint
-app.post('/logout', (req, res) => {
+/* app.post('/logout', (req, res) => {
     res.cookie('token', '', {sameSite: 'none', secure: true}).json('Logged out succesful')
-})
+}) */
 
 
 // Users endpoint
-app.get('/users', async (req, res) => {
+/* app.get('/users', async (req, res) => {
     res.json(await User.find());
-})
+}) */
 
 
 // Upload-by-a-link endpoint
