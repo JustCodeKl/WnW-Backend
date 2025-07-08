@@ -9,6 +9,8 @@ const download = require('image-downloader');
 const multer = require('multer');
 const fs = require('fs');
 
+const authRoutes = require("./routes/auth/auth-routes")
+
 
 // Express app
 const app = express();
@@ -40,6 +42,8 @@ app.use(cors({
 mongoose.connect(process.env.MONGO_URL);
 
 
+app.use('auth/login', authRoutes);
+
 // Register endpoint
 app.post('/register', async (req, res) => {
 
@@ -65,7 +69,6 @@ app.post('/login', async (req, res) => {
     const {email, password} = req.body;
 
    const user = await User.findOne({email})
-   console.log(user)
    try {
     if(user && user !== null) {
         const passOK = bcrypt.compareSync(password, user.password);
@@ -78,7 +81,6 @@ app.post('/login', async (req, res) => {
                 if(err) throw err;
                 res.cookie('token', token, {sameSite: 'None', secure: true, httpOnly: true, maxAge: 30*60*1000}).json(user);
             })
-            console.log(res.headers)
         }
         else res.json({responseStatus: 'Password not Ok'})
     }
