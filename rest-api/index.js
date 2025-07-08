@@ -65,7 +65,7 @@ app.post('/register', async (req, res) => {
 
 
 // Login endpoint
-app.post('/login', async (req, res) => {
+/* app.post('/login', async (req, res) => {
     const {email, password} = req.body;
    const user = await User.findOne({email})
    try {
@@ -87,7 +87,7 @@ app.post('/login', async (req, res) => {
    } catch (error) {
         console.log(error);
    }
-})
+}) */
 
 
 // Profile endpoint

@@ -11,6 +11,7 @@ const login = async (req, res) => {
   try {
     // Check if user exists
     const user = await User.findOne({ email });
+    console.log(user);
     if (!user) {
       return res.json({
         error: "User doesn't exist! Please register",
@@ -50,7 +51,7 @@ const login = async (req, res) => {
         },
       });
   } catch (error) {
-    res.json({ error: "Login failed" });
+    return res.json({ error: "Login failed" });
   }
 };
 
